@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.springframework', name: 'spring-context', version: '6.2.1'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.4'
+    implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.6.4.Final'
+
+    testImplementation group: 'org.springframework', name: 'spring-test', version: '6.2.1'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.2'
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+}
+
+test {
+    useJUnitPlatform()
+}
