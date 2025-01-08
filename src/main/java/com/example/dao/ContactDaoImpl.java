@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Repository
 public class ContactDaoImpl {
@@ -34,34 +35,24 @@ public class ContactDaoImpl {
 
     @Transactional
     public void save(Contact contact) {
+        if (contact == null) {
+            throw new IllegalArgumentException("Контакт не может быть null.");
+        }
         contactRepository.save(contact);
         logger.info("Контакт {} успешно добавлен.", contact);
     }
 
     @Transactional
-    public void updatePhoneNumber(Long id, String newPhoneNumber) {
+    public Optional<Contact> updateContactField(Long id, Consumer<Contact> fieldUpdater) {
         Optional<Contact> optionalContact = contactRepository.findById(id);
         if (optionalContact.isPresent()) {
             Contact contact = optionalContact.get();
-            contact.setPhoneNumber(newPhoneNumber);
+            fieldUpdater.accept(contact);
             contactRepository.save(contact);
-            logger.info("Телефонный номер контакта с ID {} обновлён.", id);
+            logger.info("Контакт с ID {} обновлён.", id);
+            return Optional.of(contact);
         } else {
-            logger.warn("Контакт с ID {} не найден для обновления номера.", id);
-            throw new EntityNotFoundException("Контакт с ID " + id + " не найден.");
-        }
-    }
-
-    @Transactional
-    public void updateEmail(Long id, String newEmail) {
-        Optional<Contact> optionalContact = contactRepository.findById(id);
-        if (optionalContact.isPresent()) {
-            Contact contact = optionalContact.get();
-            contact.setEmail(newEmail);
-            contactRepository.save(contact);
-            logger.info("Email контакта с ID {} обновлён.", id);
-        } else {
-            logger.warn("Контакт с ID {} не найден для обновления email.", id);
+            logger.warn("Контакт с ID {} не найден для обновления.", id);
             throw new EntityNotFoundException("Контакт с ID " + id + " не найден.");
         }
     }
@@ -76,5 +67,4 @@ public class ContactDaoImpl {
             throw new EntityNotFoundException("Контакт с ID " + id + " не найден.");
         }
     }
-
 }
